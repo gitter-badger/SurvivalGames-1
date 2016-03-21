@@ -5,7 +5,7 @@
 # SurvivalGames  V3.0.3
 SurvivalGames plugin for PocketMine-MP, Genisys & ImagicalMine
 
-# Test Server!
+# Test Servers!
 **BuildMCPE.eu:19132**
 And
 **kcmcpe.ddns.net:19132**
