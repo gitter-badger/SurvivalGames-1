@@ -3,11 +3,12 @@
 
 
 # SurvivalGames  V3.0.3
-SurvivalGames plugin for PocketMine-MP
+SurvivalGames plugin for PocketMine-MP, Genisys & ImagicalMine
 
 # Test Server!
 **BuildMCPE.eu:19132**
-This server uses an edited version of the plugin which has the grace period. Sorry, we can't get this code and use it...
+And
+**kcmcpe.ddns.net:19132**
 
 # Commands:
 
