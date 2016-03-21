@@ -2,8 +2,8 @@
 
 
 
-# SurvivalGames  V3.0.2
-SurvivalGames plugin for ImagicalMine - Genysis
+# SurvivalGames  V3.0.3
+SurvivalGames plugin for PocketMine-MP
 
 # Test Server!
 **BuildMCPE.eu:19132**
