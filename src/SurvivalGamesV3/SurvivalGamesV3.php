@@ -106,27 +106,7 @@ public function PlayerDeath(PlayerDeathEvent $event){
 		$this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), $spawn->getFloorZ());
 		$player->teleport($spawn,0,0);
 	}
-	
-	public function onBlockBreak(BlockBreakEvent $event)
-	{
-		$player = $event->getPlayer();
-		$level = $player->getLevel()->getFolderName();
-		if(in_array($level,$this->arenas))
-		{
-		$event->setCancelled(true);
-		}
-	}
-	
-	public function onBlockPlace(BlockPlaceEvent $event)
-	{
-		$player = $event->getPlayer();
-		$level = $player->getLevel()->getFolderName();
-		if(in_array($level,$this->arenas))
-		{
-		$event->setCancelled(true);
-		}
-	}
-	
+		
 	public function onCommand(CommandSender $player, Command $cmd, $label, array $args) {
         switch($cmd->getName()){
 			case "sg":
