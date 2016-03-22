@@ -1,7 +1,3 @@
-![alt tag](http://i.imgur.com/xEzMkd7.jpg)
-
-
-
 # SurvivalGames  V3.0.3
 SurvivalGames plugin for PocketMine-MP, Genisys & ImagicalMine
 
@@ -15,4 +11,4 @@ And
 **/sg** Displays all of the possible SurvivalGamesV3 commands!
 
 # Authors
-**Subscribe to EnderPE on Youtube**
+**EpicSteve33, EnderPE, austina1212, ImagicalGamer, remote_vase**
