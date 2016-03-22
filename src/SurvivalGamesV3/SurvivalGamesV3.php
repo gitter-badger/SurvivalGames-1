@@ -79,6 +79,9 @@ class SurvivalGamesV2 extends PluginBase implements Listener {
 	}
 	
 public function PlayerDeath(PlayerDeathEvent $event){
+	foreach($this->getServer()->getOnlinePlayers() as $pl){
+	if($pl->getLevel()=="fvhrvrhv"){	
+	
 	$p = $event->getEntity();
         $light = new AddEntityPacket();
         $light->type = 93;
@@ -90,9 +93,10 @@ public function PlayerDeath(PlayerDeathEvent $event){
         $light->x = $p->x;
         $light->y = $p->y;
         $light->z = $p->z;
-        $p->dataPacket($light);
-				//$pl->sendMessage("§3>§7 {$event->getEntity()->getName()} was demolished by ".$k->getName());
-			
+        $pl->dataPacket($light);
+	//$pl->sendMessage("§3>§7 {$event->getEntity()->getName()} was demolished by ".$k->getName());
+	}
+	}
 }
 	public function onLogin(PlayerLoginEvent $event)
 	{
