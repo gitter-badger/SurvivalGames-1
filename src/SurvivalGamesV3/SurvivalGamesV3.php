@@ -31,7 +31,7 @@ use pocketmine\inventory\ChestInventory;
 
 class SurvivalGamesV2 extends PluginBase implements Listener {
 
-    public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "Sky" . TextFormat::RED . "Wars" . TextFormat::RESET . TextFormat::GRAY . "] ";
+    public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
 	public $mode = 0;
 	public $arenas = array();
 	public $currentLevel = "";
@@ -109,7 +109,7 @@ public function PlayerDeath(PlayerDeathEvent $event){
 		$level = $player->getLevel()->getFolderName();
 		if(in_array($level,$this->arenas))
 		{
-			//$event->setCancelled(true);
+		$event->setCancelled(true);
 		}
 	}
 	
@@ -119,7 +119,7 @@ public function PlayerDeath(PlayerDeathEvent $event){
 		$level = $player->getLevel()->getFolderName();
 		if(in_array($level,$this->arenas))
 		{
-			//$event->setCancelled(true);
+		$event->setCancelled(true);
 		}
 	}
 	
@@ -206,14 +206,6 @@ public function PlayerDeath(PlayerDeathEvent $event){
 				}
 				}
 			return true;
-        case "sw":
-$player->sendTip("§l§eSkywars!");
-$player->teleport(new Vector3(-31, 3, 4));
-return true;
-      case "sgjoin":
-$player->sendTip("§l§eSurvival Games!");
-$player->teleport(new Vector3(-36, 24, 60));
-return true;
 		}
 	}
 	
@@ -262,6 +254,7 @@ return true;
 						$player->teleport($spawn,0,0);
 						$player->setNameTag($player->getName());
 						$player->getInventory()->clearAll();
+						$player->sendMessage("You have Successfully Joined a SG Match!");
 						$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 						$rank = $config2->get($player->getName());
 						if($rank == "§b[§aVIP§4+§b]")
@@ -363,7 +356,7 @@ return true;
 }
 
 class RefreshSigns extends PluginTask {
-    public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "Sky" . TextFormat::RED . "Wars" . TextFormat::RESET . TextFormat::GRAY . "] ";
+    public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
 	public function __construct($plugin)
 	{
 		$this->plugin = $plugin;
@@ -400,7 +393,7 @@ class RefreshSigns extends PluginTask {
 }
 
 class GameSender extends PluginTask {
-    public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "Sky" . TextFormat::RED . "Wars" . TextFormat::RESET . TextFormat::GRAY . "] ";
+    public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
 	public function __construct($plugin)
 	{
 		$this->plugin = $plugin;
@@ -550,7 +543,7 @@ if(count($playersArena)>=2)
 							{
 								foreach($playersArena as $pl)
 								{
-									$pl->sendPopup(TextFormat::RED . "Wait for players!");
+									$pl->sendPopup(TextFormat::RED . "A game requires 2 players!");
 								}
 								$config->set($arena . "PlayTime", 780);
 								$config->set($arena . "StartTime", 60);
