@@ -430,6 +430,7 @@ if(count($playersArena)>=2)
 								$timeToStart--;
 								foreach($playersArena as $pl)
 								{
+                                                                        $pl->sendTip(TextFormat::RED . "EpicSteve33 is awesome");
 									$pl->sendPopup(TextFormat::GRAY . "Starting in " . $timeToStart . " Seconds");
 								}
 
