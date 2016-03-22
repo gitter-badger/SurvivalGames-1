@@ -167,15 +167,15 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 					$rank = "";
 					if($args[0]=="VIP+")
 					{
-						$rank = "§b[§aVIP§4+§b]";
+						$rank = "VIP+";
 					}
 					else if($args[0]=="YouTuber")
 					{
-						$rank = "§b[§4You§7Tuber§b]";
+						$rank = "YouTuber";
 					}
 					else if($args[0]=="YouTuber+")
 					{
-						$rank = "§b[§4You§7Tuber§4+§b]";
+						$rank = "YouTuber+";
 					}
 					else
 					{
@@ -249,7 +249,7 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 						$player->getInventory()->clearAll();
 						$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 						$rank = $config2->get($player->getName());
-						if($rank == "§b[§aVIP§4+§b]")
+						if($rank == "VIP+")
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::CHAIN_HELMET));
@@ -259,7 +259,7 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 							$player->getInventory()->setItem(0, Item::get(Item::DIAMOND_AXE, 0, 1));
 							$player->getInventory()->setHotbarSlotIndex(0, 0);
 						}
-						else if($rank == "§b[§aVIP§b]")
+						else if($rank == "VIP")
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::GOLD_HELMET));
@@ -269,7 +269,7 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 							$player->getInventory()->setItem(0, Item::get(Item::IRON_AXE, 0, 1));
 							$player->getInventory()->setHotbarSlotIndex(0, 0);
 						}
-						else if($rank == "§b[§4You§7Tuber§b]")
+						else if($rank == "YouTuber")
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::GOLD_HELMET));
@@ -279,7 +279,7 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 							$player->getInventory()->setItem(0, Item::get(Item::IRON_AXE, 0, 1));
 							$player->getInventory()->setHotbarSlotIndex(0, 0);
 						}
-						else if($rank == "§b[§aVIP§b]")
+						else if($rank == "YouTuber+")
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::DIAMOND_HELMET));
