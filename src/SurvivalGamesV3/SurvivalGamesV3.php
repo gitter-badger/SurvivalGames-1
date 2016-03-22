@@ -39,7 +39,7 @@ class SurvivalGames extends PluginBase implements Listener {
 	public function onEnable()
 	{
         $this->getServer()->getPluginManager()->registerEvents($this ,$this);
-		$this->getLogger()->info(TextFormat::RED. "SurvivalGames Loaded!");
+		$this->getLogger()->info(TextFormat::RED . "SurvivalGames Loaded!");
 		$this->economy = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
 		@mkdir($this->getDataFolder());
 		$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
@@ -95,7 +95,7 @@ public function PlayerDeath(PlayerDeathEvent $event){
         $light->y = $p->y;
         $light->z = $p->z;
         $pl->dataPacket($light);
-	$event->setDeathMessage("§3>§7 {$event->getEntity()->getName()} was demolished by ".$k->getName());//$k Might not work
+	$event->setDeathMessage("§7 {$event->getEntity()->getName()} was Demolished by ".$k->getName());//$k Might not work
 	}
 }
 	public function onLogin(PlayerLoginEvent $event)
@@ -151,7 +151,7 @@ public function PlayerDeath(PlayerDeathEvent $event){
 								}
 								else
 								{
-									$player->sendMessage($this->prefix . "There is no world with this name.");
+									$player->sendMessage($this->prefix . "There is no world with this name noob.");
 								}
 							}
 							else
@@ -258,7 +258,7 @@ public function PlayerDeath(PlayerDeathEvent $event){
 						$player->teleport($spawn,0,0);
 						$player->setNameTag($player->getName());
 						$player->getInventory()->clearAll();
-						$player->sendMessage("You have Successfully Joined a SG Match!");
+						$player->sendMessage("You have Successfully Joined a SG Match Don't die!");
 						$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 						$rank = $config2->get($player->getName());
 						if($rank == "VIP+")
@@ -432,7 +432,7 @@ if(count($playersArena)>=2)
 								$timeToStart--;
 								foreach($playersArena as $pl)
 								{
-                                                                        $pl->sendTip(TextFormat::RED . "EpicSteve33 is awesome");
+                                                                        $pl->sendTip(TextFormat::RED . "EpicSteve33 is awesome!");
 									$pl->sendPopup(TextFormat::GRAY . "Starting in " . $timeToStart . " Seconds");
 								}
 
