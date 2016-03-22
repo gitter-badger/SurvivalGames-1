@@ -244,6 +244,8 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 						$level->loadChunk($spawn->getFloorX(), $spawn->getFloorZ());
 						$player->teleport($spawn,0,0);
 						$player->setNameTag($player->getName());
+                                                $player->sendTip("Welcome to SG!");
+                                                $player->sendMessage("Welcome to SG!");
 						$player->getInventory()->clearAll();
 						$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 						$rank = $config2->get($player->getName());
