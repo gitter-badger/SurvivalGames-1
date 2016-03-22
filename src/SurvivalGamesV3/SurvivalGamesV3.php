@@ -1,6 +1,6 @@
 <?php
 
-namespace SurvivalGamesV3;
+namespace SG;
 
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\PluginTask;
