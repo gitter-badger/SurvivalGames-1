@@ -37,7 +37,7 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 	public function onEnable()
 	{
         $this->getServer()->getPluginManager()->registerEvents($this ,$this);
-		$this->getLogger()->info(TextFormat::GREEN . "SurvivalGames Loaded!");
+		$this->getLogger()->info(TextFormat::RED . "SG is Loaded!");
 		$this->economy = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
 		@mkdir($this->getDataFolder());
 		$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
