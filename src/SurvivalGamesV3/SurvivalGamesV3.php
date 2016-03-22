@@ -1,6 +1,6 @@
 <?php
 
-namespace SurvivalGamesV2;
+namespace SurvivalGames;
 
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\PluginTask;
@@ -29,7 +29,7 @@ use pocketmine\entity\Effect;
 use pocketmine\tile\Chest;
 use pocketmine\inventory\ChestInventory;
 
-class SurvivalGamesV2 extends PluginBase implements Listener {
+class SurvivalGames extends PluginBase implements Listener {
 
     public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
 	public $mode = 0;
