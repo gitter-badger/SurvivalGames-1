@@ -428,6 +428,7 @@ if(count($playersArena)>=2)
 							if($timeToStart>0)
 							{
 								$timeToStart--;
+								foreach($playersArena as $pl)
 								{
 									$pl->sendPopup(TextFormat::GRAY . "Starting in " . $timeToStart . " Seconds");
 								}
