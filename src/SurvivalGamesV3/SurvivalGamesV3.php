@@ -1,12 +1,14 @@
 <?php
 
-namespace SG;
+namespace SurvivalGamesV2;
 
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\PluginTask;
 use pocketmine\event\Listener;
+use pocketmine\entity\Entity;
+use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\event\player\PlayerJoinEvent;
+use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
 use pocketmine\utils\TextFormat;
@@ -16,6 +18,7 @@ use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\block\Block;
 use pocketmine\tile\Sign;
+use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\level\Level;
 use pocketmine\item\Item;
 use pocketmine\event\block\BlockBreakEvent;
@@ -23,12 +26,11 @@ use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\entity\Effect;
-use pocketmine\event\entity\EntityLevelChangeEvent ; 
 use pocketmine\tile\Chest;
 use pocketmine\inventory\ChestInventory;
-use pocketmine\event\plugin\PluginEvent;
 
-class SurvivalGamesV3 extends PluginBase implements Listener {
+class SurvivalGamesV2 extends PluginBase implements Listener {
+
     public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
 	public $mode = 0;
 	public $arenas = array();
@@ -37,8 +39,6 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 	public function onEnable()
 	{
         $this->getServer()->getPluginManager()->registerEvents($this ,$this);
-		$this->getLogger()->info(TextFormat::RED . "SG is Loaded!");
-		$this->economy = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
 		@mkdir($this->getDataFolder());
 		$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 		$config2->save();
@@ -60,19 +60,6 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new GameSender($this), 20);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new RefreshSigns($this), 10);
 	}
-	
-	Public function playerDeath($spawn) {
-        $spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn(); 
-        $this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), 
-        $spawn->getFloorZ()); $player->teleport($spawn,0,0);
-	}
-        
-    public function playerJoin($spawn){
-	    $spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn(); 
-        $this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), 
-        $spawn->getFloorZ()); $player->teleport($spawn,0,0);
-	}
-		
 	public function onMove(PlayerMoveEvent $event)
 	{
 		$player = $event->getPlayer();
@@ -83,17 +70,48 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 			$sofar = $config->get($level . "StartTime");
 			if($sofar > 0)
 			{
-                          $event->setCancelled(true);
+				$to = clone $event->getFrom();
+				$to->yaw = $event->getTo()->yaw;
+				$to->pitch = $event->getTo()->pitch;
+				$event->setTo($to);
 			}
 		}
 	}
+	
+public function PlayerDeath(PlayerDeathEvent $event){
+	foreach($this->getServer()->getOnlinePlayers() as $pl){
+		$k=$event->getCause();
+	$p = $event->getEntity();
+        $light = new AddEntityPacket();
+        $light->type = 93;
+        $light->eid = Entity::$entityCount++;
+        $light->metadata = array();
+        $light->speedX = 0;
+        $light->speedY = 0;
+        $light->speedZ = 0;
+        $light->x = $p->x;
+        $light->y = $p->y;
+        $light->z = $p->z;
+        $pl->dataPacket($light);
+	$event->setDeathMessage("§3>§7 {$event->getEntity()->getName()} was demolished by ".$k->getName());//$k Might not work
+	}
+}
+	public function onLogin(PlayerLoginEvent $event)
+	{
+		$player = $event->getPlayer();
+		$player->getInventory()->clearAll();
+		$spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn();
+		$this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), $spawn->getFloorZ());
+		$player->teleport($spawn,0,0);
+	}
+	
 	public function onBlockBreak(BlockBreakEvent $event)
 	{
 		$player = $event->getPlayer();
 		$level = $player->getLevel()->getFolderName();
 		if(in_array($level,$this->arenas))
 		{
-			$event->setCancelled(true);
+		$event->setCancelled(true);
 		}
 	}
 	
@@ -103,7 +121,7 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 		$level = $player->getLevel()->getFolderName();
 		if(in_array($level,$this->arenas))
 		{
-			$event->setCancelled(true);
+		$event->setCancelled(true);
 		}
 	}
 	
@@ -113,9 +131,8 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 				if($player->isOp())
 				{
 					if(!empty($args[0]))
-                                       
 					{
-						if($args[0]=="create")
+						if($args[0]=="make")
 						{
 							if(!empty($args[1]))
 							{
@@ -137,10 +154,7 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 							}
 							else
 							{
-							                                             $player->sendMessage($this->prefix . "SurvivalGames Commands!");
-                                             $player->sendMessage($this->prefix . "/sg create [world] Creates an arena in the specified world!");
-                                             $player->sendMessage($this->prefix . "/setrank [rank] [player] sets a players rank!");
-                                             $player->sendMessage($this->prefix . "/ranks shows a list of ranks! <- In Dev");	
+								$player->sendMessage($this->prefix . "Missing parameters.");
 							}
 						}
 						else
@@ -150,10 +164,7 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 					}
 					else
 					{
-                                             $player->sendMessage($this->prefix . "SurvivalGames Commands!");
-                                             $player->sendMessage($this->prefix . "/sg create [world] Creates an arena in the specified world!");
-                                             $player->sendMessage($this->prefix . "/setrank [rank] [player] sets a players rank!");
-                                             $player->sendMessage($this->prefix . "/ranks shows a list of ranks! <- In Dev");
+						$player->sendMessage($this->prefix . "Missing parameters.");
 					}
 				}
 			return true;
@@ -244,9 +255,8 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 						$level->loadChunk($spawn->getFloorX(), $spawn->getFloorZ());
 						$player->teleport($spawn,0,0);
 						$player->setNameTag($player->getName());
-                                                $player->sendTip("Welcome to SG!");
-                                                $player->sendMessage("Welcome to SG!");
 						$player->getInventory()->clearAll();
+						$player->sendMessage("You have Successfully Joined a SG Match!");
 						$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 						$rank = $config2->get($player->getName());
 						if($rank == "VIP+")
@@ -305,7 +315,17 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 			$this->mode++;
 			if($this->mode==25)
 			{
-				$player->sendMessage($this->prefix . "Now tap on a deathmatch spawn.");
+		        $player->sendMessage($this->prefix . "Now tap on a deathmatch spawn.");
+                        $config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
+			$level = $this->getServer()->getLevelByName($this->currentLevel);
+			//$level->setSpawn(new Vector3($block->getX(),$block->getY()+2,$block->getZ()));
+			$config->set("arenas",$this->arenas);
+			$player->sendMessage($this->prefix . "You've been teleported back. Tap a sign to register it for the arena!");
+			$spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn();
+			$this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), $spawn->getFloorZ());
+			$player->teleport($spawn,0,0);
+			$config->save();
+			$this->mode=26;
 			}
 			$config->save();
 		}
@@ -313,7 +333,7 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 		{
 			$config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
 			$level = $this->getServer()->getLevelByName($this->currentLevel);
-			$level->setSpawn = (new Vector3($block->getX(),$block->getY()+2,$block->getZ()));
+			$level->setSpawn(new Vector3($block->getX(),$block->getY()+2,$block->getZ()));
 			$config->set("arenas",$this->arenas);
 			$player->sendMessage($this->prefix . "You've been teleported back. Tap a sign to register it for the arena!");
 			$spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn();
@@ -336,6 +356,7 @@ class SurvivalGamesV3 extends PluginBase implements Listener {
 		$config->save();
 	}
 }
+
 class RefreshSigns extends PluginTask {
     public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
 	public function __construct($plugin)
@@ -372,6 +393,7 @@ class RefreshSigns extends PluginTask {
 		}
 	}
 }
+
 class GameSender extends PluginTask {
     public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
 	public function __construct($plugin)
@@ -401,18 +423,17 @@ class GameSender extends PluginTask {
 					}
 					else
 					{
-						if(count($playersArena)>=2)
+if(count($playersArena)>=2)
 						{
 							if($timeToStart>0)
 							{
 								$timeToStart--;
 								foreach($playersArena as $pl)
-					                        {
-									$pl->sendPopup(TextFormat::GRAY . "Starting in " . $timeToStart . " Seconds");
 								{
+									$pl->sendPopup(TextFormat::GOLD . $timeToStart . " seconds");
+								}
 								if($timeToStart<=0)
 								{
-									$this->noDamageTicks = 300;
 									$this->refillChests($levelArena);
 								}
 								$config->set($arena . "StartTime", $timeToStart);
@@ -424,9 +445,10 @@ class GameSender extends PluginTask {
 								{
 									foreach($playersArena as $pl)
 									{
-										$pl->sendTip($this->prefix . TextFormat::GREEN . "You won!");
+										$pl->sendMessage($this->prefix . TextFormat::GREEN . "You won!");
 										$pl->getInventory()->clearAll();
 										$pl->removeAllEffects();
+										$pl->setNameTag($pl->getName());
 										$spawn = $this->plugin->getServer()->getDefaultLevel()->getSafeSpawn();
 										$this->plugin->getServer()->getDefaultLevel()->loadChunk($spawn->getX(), $spawn->getZ());
 										$pl->teleport($spawn,0,0);
@@ -488,10 +510,6 @@ class GameSender extends PluginTask {
 											$pl->sendMessage($this->prefix . $time . " seconds remaining");
 										}
 									}
-									if($time <= 780)
-									{
-									}
-	
 									if($time <= 0)
 									{
 										$spawn = $this->plugin->getServer()->getDefaultLevel()->getSafeSpawn();
@@ -514,10 +532,11 @@ class GameSender extends PluginTask {
 							{
 								foreach($playersArena as $pl)
 								{
-									$pl->getInventory()->clearAll();
+									$pl->sendMessage($this->prefix . TextFormat::GREEN . "You won!");
+									$pl->getInventory()->clearAll();									$level = $this->plugin->getServer()->getLevelByName("Hypixel");
 									$spawn = $this->plugin->getServer()->getDefaultLevel()->getSafeSpawn();
 									$this->plugin->getServer()->getDefaultLevel()->loadChunk($spawn->getX(), $spawn->getZ());
-									$pl->teleport($spawn);
+									$pl->teleport($spawn);$this->plugin->getServer()->unloadLevel($level);$this->plugin->getServer()->loadLevel($level);
 								}
 								$config->set($arena . "PlayTime", 780);
 								$config->set($arena . "StartTime", 60);
@@ -526,8 +545,7 @@ class GameSender extends PluginTask {
 							{
 								foreach($playersArena as $pl)
 								{
-								$pl->sendTip(TextFormat::RED . "More players needed");
-								
+									$pl->sendPopup(TextFormat::RED . "A game requires 2 players!");
 								}
 								$config->set($arena . "PlayTime", 780);
 								$config->set($arena . "StartTime", 60);
@@ -566,4 +584,3 @@ class GameSender extends PluginTask {
 		}
 	}
 }
-
