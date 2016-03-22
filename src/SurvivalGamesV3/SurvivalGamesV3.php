@@ -41,7 +41,6 @@ class SurvivalGames extends PluginBase implements Listener {
         $this->getServer()->getPluginManager()->registerEvents($this ,$this);
 		$this->getLogger()->info(TextFormat::RED. "SurvivalGames Loaded!");
 		$this->economy = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
-
 		@mkdir($this->getDataFolder());
 		$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 		$config2->save();
