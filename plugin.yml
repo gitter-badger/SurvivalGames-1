@@ -1,16 +1,16 @@
 name: SurvivalGames
-main: SurvivalGamesV3\SurvivalGamesV3
-version: 3.0.3
+main: SurvivalGames\SurvivalGames
+version: 3.0.4
 api: 
 - 1.0.0
 - 1.1.0
 - 2.0.0
-author: ImagicalGamer & EpicSteve33
+authors: EpicSteve33, ImagicalGamer & RedEnder
 
 
 commands:
     sg:
-        usage: /sg create
+        usage: /sg make
         description: SurvivalGames-Commands
     setrank:
         usage: /setrank

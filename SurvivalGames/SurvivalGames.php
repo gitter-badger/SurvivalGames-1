@@ -5,10 +5,8 @@ namespace SurvivalGames;
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\PluginTask;
 use pocketmine\event\Listener;
-use pocketmine\entity\Entity;
-use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\event\player\PlayerLoginEvent;
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
 use pocketmine\utils\TextFormat;
@@ -18,7 +16,6 @@ use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\block\Block;
 use pocketmine\tile\Sign;
-use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\level\Level;
 use pocketmine\item\Item;
 use pocketmine\event\block\BlockBreakEvent;
@@ -26,11 +23,12 @@ use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\entity\Effect;
+use pocketmine\event\entity\EntityLevelChangeEvent ; 
 use pocketmine\tile\Chest;
 use pocketmine\inventory\ChestInventory;
+use pocketmine\event\plugin\PluginEvent;
 
 class SurvivalGames extends PluginBase implements Listener {
-
     public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
 	public $mode = 0;
 	public $arenas = array();
@@ -62,6 +60,19 @@ class SurvivalGames extends PluginBase implements Listener {
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new GameSender($this), 20);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new RefreshSigns($this), 10);
 	}
+	
+	Public function playerDeath($spawn) {
+        $spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn(); 
+        $this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), 
+        $spawn->getFloorZ()); $player->teleport($spawn,0,0);
+	}
+        
+    public function playerJoin($spawn){
+	    $spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn(); 
+        $this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), 
+        $spawn->getFloorZ()); $player->teleport($spawn,0,0);
+	}
+		
 	public function onMove(PlayerMoveEvent $event)
 	{
 		$player = $event->getPlayer();
@@ -72,49 +83,39 @@ class SurvivalGames extends PluginBase implements Listener {
 			$sofar = $config->get($level . "StartTime");
 			if($sofar > 0)
 			{
-				$to = clone $event->getFrom();
-				$to->yaw = $event->getTo()->yaw;
-				$to->pitch = $event->getTo()->pitch;
-				$event->setTo($to);
+                          $event->setCancelled(true);
 			}
 		}
 	}
-	
-public function PlayerDeath(PlayerDeathEvent $event){
-	foreach($this->getServer()->getOnlinePlayers() as $pl){
-		$k=$event->getCause();
-	$p = $event->getEntity();
-        $light = new AddEntityPacket();
-        $light->type = 93;
-        $light->eid = Entity::$entityCount++;
-        $light->metadata = array();
-        $light->speedX = 0;
-        $light->speedY = 0;
-        $light->speedZ = 0;
-        $light->x = $p->x;
-        $light->y = $p->y;
-        $light->z = $p->z;
-        $pl->dataPacket($light);
-	$event->setDeathMessage("§7 {$event->getEntity()->getName()} was Demolished by ".$k->getName());//$k Might not work
-	}
-}
-	public function onLogin(PlayerLoginEvent $event)
+	public function onBlockBreak(BlockBreakEvent $event)
 	{
 		$player = $event->getPlayer();
-		$player->getInventory()->clearAll();
-		$spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn();
-		$this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), $spawn->getFloorZ());
-		$player->teleport($spawn,0,0);
+		$level = $player->getLevel()->getFolderName();
+		if(in_array($level,$this->arenas))
+		{
+			$event->setCancelled(true);
+		}
 	}
-		
+	
+	public function onBlockPlace(BlockPlaceEvent $event)
+	{
+		$player = $event->getPlayer();
+		$level = $player->getLevel()->getFolderName();
+		if(in_array($level,$this->arenas))
+		{
+			$event->setCancelled(true);
+		}
+	}
+	
 	public function onCommand(CommandSender $player, Command $cmd, $label, array $args) {
         switch($cmd->getName()){
 			case "sg":
 				if($player->isOp())
 				{
 					if(!empty($args[0]))
+                                       
 					{
-						if($args[0]=="make")
+						if($args[0]=="create")
 						{
 							if(!empty($args[1]))
 							{
@@ -131,12 +132,15 @@ public function PlayerDeath(PlayerDeathEvent $event){
 								}
 								else
 								{
-									$player->sendMessage($this->prefix . "There is no world with this name noob.");
+									$player->sendMessage($this->prefix . "There is no world with this name.");
 								}
 							}
 							else
 							{
-								$player->sendMessage($this->prefix . "Missing parameters.");
+							                                             $player->sendMessage($this->prefix . "SurvivalGames Commands!");
+                                             $player->sendMessage($this->prefix . "/sg create [world] Creates an arena in the specified world!");
+                                             $player->sendMessage($this->prefix . "/setrank [rank] [player] sets a players rank!");
+                                             $player->sendMessage($this->prefix . "/ranks shows a list of ranks! <- In Dev");	
 							}
 						}
 						else
@@ -146,7 +150,10 @@ public function PlayerDeath(PlayerDeathEvent $event){
 					}
 					else
 					{
-						$player->sendMessage($this->prefix . "Missing parameters.");
+                                             $player->sendMessage($this->prefix . "SurvivalGames Commands!");
+                                             $player->sendMessage($this->prefix . "/sg create [world] Creates an arena in the specified world!");
+                                             $player->sendMessage($this->prefix . "/setrank [rank] [player] sets a players rank!");
+                                             $player->sendMessage($this->prefix . "/ranks shows a list of ranks! <- In Dev");
 					}
 				}
 			return true;
@@ -172,7 +179,7 @@ public function PlayerDeath(PlayerDeathEvent $event){
 					}
 					else
 					{
-						$rank = "§b[§a" . $args[0] . "§b]";
+						$rank = " " . $args[0] . " ";
 					}
 					$config = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 					$config->set($args[1],$rank);
@@ -238,7 +245,6 @@ public function PlayerDeath(PlayerDeathEvent $event){
 						$player->teleport($spawn,0,0);
 						$player->setNameTag($player->getName());
 						$player->getInventory()->clearAll();
-						$player->sendMessage("You have Successfully Joined a SG Match Don't die!");
 						$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 						$rank = $config2->get($player->getName());
 						if($rank == "VIP+")
@@ -251,7 +257,7 @@ public function PlayerDeath(PlayerDeathEvent $event){
 							$player->getInventory()->setItem(0, Item::get(Item::DIAMOND_AXE, 0, 1));
 							$player->getInventory()->setHotbarSlotIndex(0, 0);
 						}
-						else if($rank == "VIP")
+						else if($rank == " VIP ")
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::GOLD_HELMET));
@@ -297,17 +303,7 @@ public function PlayerDeath(PlayerDeathEvent $event){
 			$this->mode++;
 			if($this->mode==25)
 			{
-		        $player->sendMessage($this->prefix . "Now tap on a deathmatch spawn.");
-                        $config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
-			$level = $this->getServer()->getLevelByName($this->currentLevel);
-			//$level->setSpawn(new Vector3($block->getX(),$block->getY()+2,$block->getZ()));
-			$config->set("arenas",$this->arenas);
-			$player->sendMessage($this->prefix . "You've been teleported back. Tap a sign to register it for the arena!");
-			$spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn();
-			$this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), $spawn->getFloorZ());
-			$player->teleport($spawn,0,0);
-			$config->save();
-			$this->mode=26;
+				$player->sendMessage($this->prefix . "Now tap on a deathmatch spawn.");
 			}
 			$config->save();
 		}
@@ -315,7 +311,7 @@ public function PlayerDeath(PlayerDeathEvent $event){
 		{
 			$config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
 			$level = $this->getServer()->getLevelByName($this->currentLevel);
-			$level->setSpawn(new Vector3($block->getX(),$block->getY()+2,$block->getZ()));
+			$level->setSpawn = (new Vector3($block->getX(),$block->getY()+2,$block->getZ()));
 			$config->set("arenas",$this->arenas);
 			$player->sendMessage($this->prefix . "You've been teleported back. Tap a sign to register it for the arena!");
 			$spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn();
@@ -338,7 +334,6 @@ public function PlayerDeath(PlayerDeathEvent $event){
 		$config->save();
 	}
 }
-
 class RefreshSigns extends PluginTask {
     public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
 	public function __construct($plugin)
@@ -375,7 +370,6 @@ class RefreshSigns extends PluginTask {
 		}
 	}
 }
-
 class GameSender extends PluginTask {
     public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
 	public function __construct($plugin)
@@ -405,19 +399,18 @@ class GameSender extends PluginTask {
 					}
 					else
 					{
-if(count($playersArena)>=2)
+						if(count($playersArena)>=2)
 						{
 							if($timeToStart>0)
 							{
 								$timeToStart--;
 								foreach($playersArena as $pl)
 								{
-                                                                        $pl->sendTip(TextFormat::RED . "EpicSteve33 is awesome!");
 									$pl->sendPopup(TextFormat::GRAY . "Starting in " . $timeToStart . " Seconds");
 								}
-
 								if($timeToStart<=0)
 								{
+									$this->noDamageTicks = 300;
 									$this->refillChests($levelArena);
 								}
 								$config->set($arena . "StartTime", $timeToStart);
@@ -429,10 +422,9 @@ if(count($playersArena)>=2)
 								{
 									foreach($playersArena as $pl)
 									{
-										$pl->sendMessage($this->prefix . TextFormat::GREEN . "You won!");
+										$pl->sendTip($this->prefix . TextFormat::GREEN . "You won!");
 										$pl->getInventory()->clearAll();
 										$pl->removeAllEffects();
-										$pl->setNameTag($pl->getName());
 										$spawn = $this->plugin->getServer()->getDefaultLevel()->getSafeSpawn();
 										$this->plugin->getServer()->getDefaultLevel()->loadChunk($spawn->getX(), $spawn->getZ());
 										$pl->teleport($spawn,0,0);
@@ -494,6 +486,10 @@ if(count($playersArena)>=2)
 											$pl->sendMessage($this->prefix . $time . " seconds remaining");
 										}
 									}
+									if($time <= 780)
+									{
+									}
+	
 									if($time <= 0)
 									{
 										$spawn = $this->plugin->getServer()->getDefaultLevel()->getSafeSpawn();
@@ -516,11 +512,10 @@ if(count($playersArena)>=2)
 							{
 								foreach($playersArena as $pl)
 								{
-									$pl->sendMessage($this->prefix . TextFormat::GREEN . "You won!");
-									$pl->getInventory()->clearAll();									$level = $this->plugin->getServer()->getLevelByName("Hypixel");
+									$pl->getInventory()->clearAll();
 									$spawn = $this->plugin->getServer()->getDefaultLevel()->getSafeSpawn();
 									$this->plugin->getServer()->getDefaultLevel()->loadChunk($spawn->getX(), $spawn->getZ());
-									$pl->teleport($spawn);$this->plugin->getServer()->unloadLevel($level);$this->plugin->getServer()->loadLevel($level);
+									$pl->teleport($spawn);
 								}
 								$config->set($arena . "PlayTime", 780);
 								$config->set($arena . "StartTime", 60);
@@ -529,7 +524,8 @@ if(count($playersArena)>=2)
 							{
 								foreach($playersArena as $pl)
 								{
-									$pl->sendPopup(TextFormat::RED . "A game requires 2 players!");
+								$pl->sendTip(TextFormat::RED . "More players needed");
+								
 								}
 								$config->set($arena . "PlayTime", 780);
 								$config->set($arena . "StartTime", 60);
