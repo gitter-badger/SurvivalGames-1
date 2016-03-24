@@ -12,3 +12,9 @@ And
 
 # Authors
 **EpicSteve33, EnderPE, austina1212, ImagicalGamer, remote_vase**
+
+# Contact Info
+
+Username: EpicSteve33 
+
+Kik, Twitter, instagram
