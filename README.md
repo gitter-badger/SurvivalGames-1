@@ -1,10 +1,9 @@
 # SurvivalGames  V3.0.5
 SurvivalGames plugin for PocketMine-MP, Genisys & ImagicalMine
 
-# Test Servers!
-**BuildMCPE.eu:19132**
-And
-**kcmcpe.ddns.net:19132**
+# Test Server!
+**Ip: kcmcpe.ddns.net**
+**Port: 19132**
 
 # Commands:
 
