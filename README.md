@@ -1,4 +1,4 @@
-# SurvivalGames  V3.0.4
+# SurvivalGames  V3.0.5
 SurvivalGames plugin for PocketMine-MP, Genisys & ImagicalMine
 
 # Test Servers!
