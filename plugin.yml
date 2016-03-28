@@ -1,6 +1,6 @@
 name: SurvivalGames
 main: SurvivalGames\SurvivalGames
-version: 3.0.4
+version: 3.0.5
 api: 
 - 1.0.0
 - 1.1.0
