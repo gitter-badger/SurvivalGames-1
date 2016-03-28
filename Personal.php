@@ -2,15 +2,18 @@ For My Personal Server
 
 <?php
 
-namespace SurvivalGames;
+namespace SurvivalGamesV3;
 
 use pocketmine\plugin\PluginBase;
 use pocketmine\scheduler\PluginTask;
 use pocketmine\event\Listener;
+use pocketmine\entity\Entity;
+use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\event\player\PlayerJoinEvent;
+use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\command\CommandSender;
 use pocketmine\command\Command;
+use pocketmine\level\particle\FloatingTextParticle;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Config;
 use pocketmine\math\Vector3;
@@ -18,95 +21,109 @@ use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\block\Block;
 use pocketmine\tile\Sign;
+use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\level\Level;
 use pocketmine\item\Item;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\player\PlayerMoveEvent;
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\entity\Effect;
-use pocketmine\event\entity\EntityLevelChangeEvent ; 
 use pocketmine\tile\Chest;
 use pocketmine\inventory\ChestInventory;
-use pocketmine\event\plugin\PluginEvent;
 
-class SurvivalGames extends PluginBase implements Listener {
-    public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
-	public $mode = 0;
-	public $arenas = array();
-	public $currentLevel = "";
-	
-	public function onEnable()
-	{
-        $this->getServer()->getPluginManager()->registerEvents($this ,$this);
-		$this->getLogger()->info(TextFormat::RED . "SurvivalGames Loaded!");
-		$this->economy = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
-		@mkdir($this->getDataFolder());
-		$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
-		$config2->save();
-		$config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
-		if($config->get("arenas")!=null)
-		{
-			$this->arenas = $config->get("arenas");
-		}
-		foreach($this->arenas as $lev)
-		{
-			$this->getServer()->loadLevel($lev);
-		}
-		$items = array(array(261,0,1),array(262,0,2),array(262,0,3),array(267,0,1),array(268,0,1),array(272,0,1),array(276,0,1),array(283,0,1));
-		if($config->get("chestitems")==null)
-		{
-			$config->set("chestitems",$items);
-		}
-		$config->save();
-		$this->getServer()->getScheduler()->scheduleRepeatingTask(new GameSender($this), 20);
-		$this->getServer()->getScheduler()->scheduleRepeatingTask(new RefreshSigns($this), 10);
-	}
-	
-	public function PlayerDeath(PlayerDeathEvent $event){
-        foreach($this->getServer()->getOnlinePlayers() as $pl){
-        //$k=$event->getCause();
-        $p = $event->getEntity();
-        $light = new AddEntityPacket();
-        $light->type = 93;
-        $light->eid = Entity::$entityCount++;
-        $light->metadata = array();
-        $light->speedX = 0;
-        $light->speedY = 0;
-        $light->speedZ = 0;
-        $light->x = $p->x;
-        $light->y = $p->y;
-        $light->z = $p->z;
-        $pl->dataPacket($light);
-        $event->setDeathMessage("§3>§7 {$event->getEntity()->getName()} was demolished ");//$k Might not work
-	}
-        
-    public function playerJoin($spawn){
-	    $event->getPlayer()->sendTip("Welcome to KingdomCraft Network\n--------------------");
-             $player=$event->getPlayer();
-              $level = $this->getServer()->getLevelByName("world");
-            $level->addParticle(new FloatingTextParticle(new Vector3(2682, 27, -1497), "", "§7Welcome§7, §e".$player->getName()."§r\n§7 to KingdomCraft§r/n§7 IP: §e".$player->getAddress()."§r\n§7 Players: §e".count($this->getServer()->getOnlinePlayers())."§r\n§7 Enjoy!"), [$player]);
-            if($player->isOp()){
-            $player->setAllowFlight(true);
-	}
-		
-	public function onMove(PlayerMoveEvent $event)
-	{
-		$player = $event->getPlayer();
-		$level = $player->getLevel()->getFolderName();
-		if(in_array($level,$this->arenas))
-		{
-			$config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
-			$sofar = $config->get($level . "StartTime");
-			if($sofar > 0)
-			{
-				$to = clone $event->getFrom();
-				$to->yaw = $event->getTo()->yaw;
-				$to->pitch = $event->getTo()->pitch;
-				$event->setTo($to);
-			}
-		}
-	}
+class SurvivalGamesV3 extends PluginBase implements Listener {
+
+public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
+public $mode = 0;
+public $arenas = array();
+public $currentLevel = "";
+
+public function onEnable()
+{
+$this->getServer()->getPluginManager()->registerEvents($this ,$this);
+@mkdir($this->getDataFolder());
+$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
+$config2->save();
+$config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
+if($config->get("arenas")!=null)
+{
+$this->arenas = $config->get("arenas");
+}
+foreach($this->arenas as $lev)
+{
+$this->getServer()->loadLevel($lev);
+}
+$items = array(array(261,0,1),array(262,0,2),array(262,0,3),array(267,0,1),array(268,0,1),array(272,0,1),array(276,0,1),array(283,0,1));
+if($config->get("chestitems")==null)
+{
+$config->set("chestitems",$items);
+}
+$config->save();
+$this->getServer()->getScheduler()->scheduleRepeatingTask(new GameSender($this), 20);
+$this->getServer()->getScheduler()->scheduleRepeatingTask(new RefreshSigns($this), 10);
+}
+public function onJoin(PlayerJoinEvent $event)
+{
+$event->getPlayer()->sendTip("Welcome to BladePVP\n--------------------");
+$player=$event->getPlayer();
+$level = $this->getServer()->getLevelByName("world");
+$level->addParticle(new FloatingTextParticle(new Vector3(2662, 26.5, -1460),"", "§l§8[§7-§8]§e PARKOUR §8[§7-§8]"));
+$level->addParticle(new FloatingTextParticle(new Vector3(2662, 26, -1460),"", "§l§8[§7-§8]§e Complete daily for Rewards! §8[§7-§8]"));
+$level->addParticle(new FloatingTextParticle(new Vector3(2682, 27, -1497), "", "§7Welcome§7, §e".$player->getName()."§r\n§7 to BladePvP§r\n§7 IP: §e".$player->getAddress()."§r\n§7 Players: §e".count($this->getServer()->getOnlinePlayers())."§r\n§7 Enjoy!"), [$player]);
+if($player->isOp()){
+$player->setNameTag("§a".$player->getName());
+$player->setAllowFlight(true);
+}
+}
+public function onMove(PlayerMoveEvent $event)
+{
+$player = $event->getPlayer();
+$level = $player->getLevel()->getFolderName();
+if(in_array($level,$this->arenas))
+{
+$config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
+$sofar = $config->get($level . "StartTime");
+if($sofar > 0)
+{
+$to = clone $event->getFrom();
+$to->yaw = $event->getTo()->yaw;
+$to->pitch = $event->getTo()->pitch;
+$event->setTo($to);
+}
+}
+}
+
+public function PlayerDeath(PlayerDeathEvent $event){
+foreach($this->getServer()->getOnlinePlayers() as $pl){
+//$k=$event->getCause();
+$p = $event->getEntity();
+      $light = new AddEntityPacket();
+      $light->type = 93;
+      $light->eid = Entity::$entityCount++;
+      $light->metadata = array();
+      $light->speedX = 0;
+      $light->speedY = 0;
+      $light->speedZ = 0;
+      $light->x = $p->x;
+      $light->y = $p->y;
+      $light->z = $p->z;
+      $pl->dataPacket($light);
+      $event->setDeathMessage("§3>§7 {$event->getEntity()->getName()} was demolished ");//$k Might not work
+      }
+       }
+
+      public function onLogin(PlayerLoginEvent $event)
+        {
+       $player = $event->getPlayer();
+       $player->getInventory()->clearAll();
+       $spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn();
+        $this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), $spawn->getFloorZ());
+        $player->teleport($spawn,0,0);
+       }
+
+
 	public function onBlockBreak(BlockBreakEvent $event)
 	{
 		$player = $event->getPlayer();
