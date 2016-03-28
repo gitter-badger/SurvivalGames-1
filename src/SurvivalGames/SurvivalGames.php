@@ -260,6 +260,7 @@ class SurvivalGames extends PluginBase implements Listener {
 						$player->teleport($spawn,0,0);
 						$player->setNameTag($player->getName());
 						$player->getInventory()->clearAll();
+                                                $player->sendMessage("§7[§fS§4G§7] You have Successfully Joined a Match!");
 						$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 						$rank = $config2->get($player->getName());
 						if($rank == "VIP+")
@@ -539,7 +540,7 @@ class GameSender extends PluginTask {
 							{
 								foreach($playersArena as $pl)
 								{
-								$pl->sendTip(TextFormat::RED . "More players needed");
+								$pl->sendPopup(TextFormat::RED . "A game requires 2 players!");
 								
 								}
 								$config->set($arena . "PlayTime", 780);
