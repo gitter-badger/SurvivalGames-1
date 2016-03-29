@@ -29,7 +29,7 @@ use pocketmine\inventory\ChestInventory;
 use pocketmine\event\plugin\PluginEvent;
 
 class SurvivalGames extends PluginBase implements Listener {
-    public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
+    public $prefix = TextFormat::GRAY . "[§fS§4G§7]";
 	public $mode = 0;
 	public $arenas = array();
 	public $currentLevel = "";
@@ -37,7 +37,7 @@ class SurvivalGames extends PluginBase implements Listener {
 	public function onEnable()
 	{
         $this->getServer()->getPluginManager()->registerEvents($this ,$this);
-		$this->getLogger()->info(TextFormat::RED . "SurvivalGames Loaded!");
+		$this->getLogger()->info(TextFormat::GREEN . "SurvivalGames Loaded!");
 		$this->economy = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
 		@mkdir($this->getDataFolder());
 		$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
@@ -61,7 +61,7 @@ class SurvivalGames extends PluginBase implements Listener {
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new RefreshSigns($this), 10);
 	}
 	
-	public function PlayerDeath(PlayerDeathEvent $event){
+	Public function PlayerDeath(PlayerDeathEvent $event){
         foreach($this->getServer()->getOnlinePlayers() as $pl){
         //$k=$event->getCause();
         $p = $event->getEntity();
@@ -77,8 +77,8 @@ class SurvivalGames extends PluginBase implements Listener {
         $light->z = $p->z;
         $pl->dataPacket($light);
         $event->setDeathMessage("§3>§7 {$event->getEntity()->getName()} was demolished ");//$k Might not work
+		}
 	}
-        
     public function playerJoin($spawn){
 	    $spawn = $this->getServer()->getDefaultLevel()->getSafeSpawn(); 
         $this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), 
@@ -95,10 +95,7 @@ class SurvivalGames extends PluginBase implements Listener {
 			$sofar = $config->get($level . "StartTime");
 			if($sofar > 0)
 			{
-				$to = clone $event->getFrom();
-				$to->yaw = $event->getTo()->yaw;
-				$to->pitch = $event->getTo()->pitch;
-				$event->setTo($to);
+				$event->setCancelled(true);
 			}
 		}
 	}
@@ -194,7 +191,7 @@ class SurvivalGames extends PluginBase implements Listener {
 					}
 					else
 					{
-						$rank = " " . $args[0] . " ";
+						$rank = "§b[§a" . $args[0] . "§b]";
 					}
 					$config = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 					$config->set($args[1],$rank);
@@ -273,7 +270,7 @@ class SurvivalGames extends PluginBase implements Listener {
 							$player->getInventory()->setItem(0, Item::get(Item::DIAMOND_AXE, 0, 1));
 							$player->getInventory()->setHotbarSlotIndex(0, 0);
 						}
-						else if($rank == " VIP ")
+						else if($rank == "VIP")
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::GOLD_HELMET));
@@ -351,7 +348,7 @@ class SurvivalGames extends PluginBase implements Listener {
 	}
 }
 class RefreshSigns extends PluginTask {
-    public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
+    public $prefix = TextFormat::GRAY . "[§fS§4G§7]";
 	public function __construct($plugin)
 	{
 		$this->plugin = $plugin;
@@ -387,7 +384,7 @@ class RefreshSigns extends PluginTask {
 	}
 }
 class GameSender extends PluginTask {
-    public $prefix = TextFormat::GRAY . "[" . TextFormat::WHITE . TextFormat::BOLD . "S" . TextFormat::RED . "G" . TextFormat::RESET . TextFormat::GRAY . "] ";
+    public $prefix = TextFormat::GRAY . "[§fS§4G§7]";
 	public function __construct($plugin)
 	{
 		$this->plugin = $plugin;
@@ -438,7 +435,7 @@ class GameSender extends PluginTask {
 								{
 									foreach($playersArena as $pl)
 									{
-										$pl->sendTip($this->prefix . TextFormat::GREEN . "You won!");
+										$pl->sendTip($this->prefix . TextFormat::GREEN . "You won the match!");
 										$pl->getInventory()->clearAll();
 										$pl->removeAllEffects();
 										$spawn = $this->plugin->getServer()->getDefaultLevel()->getSafeSpawn();
@@ -529,6 +526,7 @@ class GameSender extends PluginTask {
 								foreach($playersArena as $pl)
 								{
 									$pl->getInventory()->clearAll();
+                                                                        $pl->sendMessage("Thanks For Playing!");
 									$spawn = $this->plugin->getServer()->getDefaultLevel()->getSafeSpawn();
 									$this->plugin->getServer()->getDefaultLevel()->loadChunk($spawn->getX(), $spawn->getZ());
 									$pl->teleport($spawn);
