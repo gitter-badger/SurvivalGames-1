@@ -37,7 +37,7 @@ class SurvivalGames extends PluginBase implements Listener {
 	public function onEnable()
 	{
         $this->getServer()->getPluginManager()->registerEvents($this ,$this);
-		$this->getLogger()->info(TextFormat::GREEN . "SurvivalGames Loaded!");
+		$this->getLogger()->info(TextFormat::RED . "SurvivalGames Loaded!");
 		$this->economy = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
 		@mkdir($this->getDataFolder());
 		$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
@@ -95,7 +95,10 @@ class SurvivalGames extends PluginBase implements Listener {
 			$sofar = $config->get($level . "StartTime");
 			if($sofar > 0)
 			{
-				$event->setCancelled(true);
+				$to = clone $event->getFrom();
+				$to->yaw = $event->getTo()->yaw;
+				$to->pitch = $event->getTo()->pitch;
+				$event->setTo($to);
 			}
 		}
 	}
@@ -270,7 +273,7 @@ class SurvivalGames extends PluginBase implements Listener {
 							$player->getInventory()->setItem(0, Item::get(Item::DIAMOND_AXE, 0, 1));
 							$player->getInventory()->setHotbarSlotIndex(0, 0);
 						}
-						else if($rank == "VIP")
+						else if($rank == "§b[§aVIP§b]")
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::GOLD_HELMET));
