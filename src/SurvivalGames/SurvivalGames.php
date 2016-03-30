@@ -85,7 +85,7 @@ class SurvivalGames extends PluginBase implements Listener {
         $this->getServer()->getDefaultLevel()->loadChunk($spawn->getFloorX(), 
         $spawn->getFloorZ()); $player->teleport($spawn,0,0);
 	}
-		
+		}
 	public function onMove(PlayerMoveEvent $event)
 	{
 		$player = $event->getPlayer();
