@@ -1,5 +1,7 @@
 # SurvivalGames  V3.0.5
-SurvivalGames plugin for PocketMine-MP, Genisys & ImagicalMine
+SurvivalGames plugin for PocketMine-MP, & ImagicalMine
+
+please do not use with genisys you can but it doesnt work correctly on genisys
 
 # Test Server!
 **Ip: kcmcpe.ddns.net**
