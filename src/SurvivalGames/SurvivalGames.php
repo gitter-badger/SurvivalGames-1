@@ -1,5 +1,4 @@
 <?php
-
 namespace SurvivalGames;
 
 use pocketmine\plugin\PluginBase;
@@ -29,8 +28,8 @@ use pocketmine\event\entity\EntityLevelChangeEvent ;
 use pocketmine\tile\Chest;
 use pocketmine\inventory\ChestInventory;
 use pocketmine\event\plugin\PluginEvent;
-use pockemine\entity\Entity;
-use pocketmine\network\protocal\AddEntityPacket;
+use pocketmine\entity\Entity;
+use pocketmine\network\protocol\AddEntityPacket;
 
 class SurvivalGames extends PluginBase implements Listener {
 	
@@ -62,17 +61,74 @@ class SurvivalGames extends PluginBase implements Listener {
 		{
 			$config->set("chestitems",$items);
 		}
+                if($config->get("lightning_effect")==null){
+                $config->set("lightning_effect","ON");
+                }
 		$config->save();
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new GameSender($this), 20);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new RefreshSigns($this), 10);
 	}
 	
-
+	public function giveRandomKit(PlayerJoinEvent $e){
+		$p = $e->getPlayer();
+		$kit = rand(1,4);
+		switch($kit){
+			case 1:
+				$p->getInventory()->addItem(Item::get(302,0,1));
+				$p->getInventory()->addItem(Item::get(303,0,1));
+				$p->getInventory()->addItem(Item::get(304,0,1));
+				$p->getInventory()->addItem(Item::get(305,0,1));
+				$p->getInventory()->addItem(Item::get(279,0,1));
+				
+				$p->sendMessage(C::BLUE."You Randomly Got The ".C::YELLOW."Athlete".C::BLUE." Kit!");
+			break;
+			
+			case 2:
+				$p->getInventory()->addItem(Item::get(298,0,1));
+				$p->getInventory()->addItem(Item::get(299,0,1));
+				$p->getInventory()->addItem(Item::get(300,0,1));
+				$p->getInventory()->addItem(Item::get(301,0,1));
+				$p->getInventory()->addItem(Item::get(268,0,1));
+				
+				$p->sendMessage(C::BLUE."You Randomly Got The ".C::YELLOW."Beginnerz".C::BLUE." Kit!");
+			break;
+			
+			case 3:
+				$effect = Effect::getEffect(1);
+				$effect->setDuration(2184728365782365723642365723652); 
+				$effect->setVisible(true);
+				$effect->setAmplifier(2);
+				$p->addEffect($effect);
+				
+				$effect2 = Effect::getEffect(8);
+				$effect2->setDuration(2184728365782365723642365723652); 
+				$effect2->setVisible(true);
+				$effect2->setAmplifier(2);
+				$p->addEffect($effect2);
+				
+				$p->getInventory()->addItem(Item::get(267,0,1));
+				
+				$p->sendMessage(C::BLUE."You Randomly Got The ".C::YELLOW."Athlete".C::BLUE." Kit!");
+			break;
+			
+			case 4:
+				$ef = Effect::getEffect(8);
+				$ef->setDuration(2184728365782365723642365723652); 
+				$ef->setVisible(true);
+				$ef->setAmplifier(4);
+				$p->addEffect($ef);
+				
+				$p->getInventory()->addItem(Item::get(293,0,1));
+				
+				$p->sendMessage(C::BLUE."You Randomly Got The ".C::YELLOW."Rabbit".C::BLUE." Kit!");
+			break;
 		}
 	}
  	public function PlayerDeath(PlayerDeathEvent $event){
           foreach($this->getServer()->getOnlinePlayers() as $pl){
-          $p = $event->getEntity();
+	  $config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
+                 if($config->get("lightning_effect")=="ON"){
+              $p = $event->getEntity();
           $light = new AddEntityPacket();
           $light->type = 93;
           $light->eid = Entity::$entityCount++;
@@ -85,6 +141,8 @@ class SurvivalGames extends PluginBase implements Listener {
           $light->z = $p->z;
           $pl->dataPacket($light);
           $event->setDeathMessage("§3>§7" . $event->getEntity()->getName() . " was demolished ");
+          }
+          
  		}
  	}
     public function playerJoin($spawn){
@@ -154,7 +212,7 @@ class SurvivalGames extends PluginBase implements Listener {
 					if(!empty($args[0]))
                                        
 					{
-						if($args[0]=="make")
+						if($args[0]=="create")
 						{
 							if(!empty($args[1]))
 							{
@@ -177,7 +235,7 @@ class SurvivalGames extends PluginBase implements Listener {
 							else
 							{
 							                                             $player->sendMessage($this->prefix . "SurvivalGames Commands!");
-                                             $player->sendMessage($this->prefix . "/sg make [world] Creates an arena in the specified world!");
+                                             $player->sendMessage($this->prefix . "/sg create [world] Creates an arena in the specified world!");
                                              $player->sendMessage($this->prefix . "/setrank [rank] [player] sets a players rank!");
                                              $player->sendMessage($this->prefix . "/ranks shows a list of ranks! <- In Dev");	
 							}
@@ -190,7 +248,7 @@ class SurvivalGames extends PluginBase implements Listener {
 					else
 					{
                                              $player->sendMessage($this->prefix . "SurvivalGames Commands!");
-                                             $player->sendMessage($this->prefix . "/sg make [world] Creates an arena in the specified world!");
+                                             $player->sendMessage($this->prefix . "/sg create [world] Creates an arena in the specified world!");
                                              $player->sendMessage($this->prefix . "/setrank [rank] [player] sets a players rank!");
                                              $player->sendMessage($this->prefix . "/ranks shows a list of ranks! <- In Dev");
 					}
@@ -262,7 +320,7 @@ class SurvivalGames extends PluginBase implements Listener {
 		{
 			if($this->mode==26)
 			{
-				$tile->setText(C::GRAY . "[§bJoin§7]",C::BLUE  . "0 / 24",$this->currentLevel,$this->prefix);
+				$tile->setText(C::GRAY . "[§2Join§7]",C::BLUE  . "0 / 24",$this->currentLevel,$this->prefix);
 				$this->refreshArenas();
 				$this->currentLevel = "";
 				$this->mode = 0;
@@ -282,9 +340,9 @@ class SurvivalGames extends PluginBase implements Listener {
 						$spawn = new Position($thespawn[0]+0.5,$thespawn[1],$thespawn[2]+0.5,$level);
 						$level->loadChunk($spawn->getFloorX(), $spawn->getFloorZ());
 						$player->teleport($spawn,0,0);
-						$player->setNameTag($player->getName());
+						$player->setNameTag(C::BOLD . C::RED . $player->getName());
 						$player->getInventory()->clearAll();
-                                                $player->sendMessage("§7[§fS§4G§7] Welcome ".$event->getPlayer()->getName()." to the Match!");
+                                                $player->sendMessage("§7§l[§fS§cG§7] You have Successfully Joined a Match!");
 						$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 						$rank = $config2->get($player->getName());
 						if($rank == "§b[§aVIP§4+§b]")
@@ -490,7 +548,7 @@ class GameSender extends PluginTask {
 								$minutes = $time2 / 60;
 									foreach($playersArena as $pl)
 									{
-										$pl->sendTip($this->prefix . $time2 . " Seconds left in the match!");
+										$pl->sendPopup($this->prefix . $time2 . " left in the match!");
 									}
 								if(is_int($minutes) && $minutes>0)
 								{
