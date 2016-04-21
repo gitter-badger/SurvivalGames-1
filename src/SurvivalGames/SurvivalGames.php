@@ -315,7 +315,7 @@ class SurvivalGames extends PluginBase implements Listener {
 								$player->getInventory()->sendArmorContents($player);
 							$player->getInventory()->setHotbarSlotIndex(0, 0);
 						}
-						else if($rank == "YouTuber)
+						else if($rank == "YouTuber")
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::GOLD_HELMET));
@@ -487,7 +487,7 @@ class GameSender extends PluginTask {
 										$pl->teleport($spawn,0,0);
 									}
 									$config->set($arena . "PlayTime", 780);
-									$config->set($arena . "StartTime", 60);
+									$config->set($arena . "StartTime", 120);
 								}
 								$time--;
 								if($time>=180)
