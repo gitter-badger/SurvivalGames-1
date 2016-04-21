@@ -5,7 +5,7 @@ This is a fork of the SurvivalGames plugin by ImagicalGamer
 Things on this are being changed a lot none of them get tested before they are added so use at your own risk!!!!
 
 # Latest Build
-Click Here (Later) to get the latest "phar" of this plugin 
+Click Here http://kcmcpe.pe.hu/phars to get the latest "phar" of this plugin 
 
 # Test Server!
 **Ip: kcmcpe.ddns.net**
