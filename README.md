@@ -41,7 +41,7 @@ This plugin is working on most versions of Pocketmine if you run into this probl
 - [x] Fix winner TP to spawn
 - [ ] Make the ImagicalMine Branch Stable ( probably won't ever happen lel)
 - [ ] Update Genysis branch (after the above is completed)
-- [ ] Send messages only to people in SG world
+- [x] Send messages only to people in SG world
 - [ ] Add wolfs to VIPs to help fight
 - [x] waiting time 2 minutes instead of 60 seconds (not tested yet)
 - [ ] Frost mode like in the movie (at time during the match snow covers map and players die if they contact it)
