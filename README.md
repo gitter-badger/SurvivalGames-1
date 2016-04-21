@@ -1,4 +1,4 @@
-# Do Not Use this version of the plugin 
+# Use at Your own risk!
 Things on this are being changed a lot none of them get tested before they are added so use at your own risk!!!!
 
 # Test Server!
