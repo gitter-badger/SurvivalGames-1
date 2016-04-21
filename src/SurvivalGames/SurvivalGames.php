@@ -124,7 +124,7 @@ class SurvivalGames extends PluginBase implements Listener {
 		{
 			$config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
 			$sofar = $config->get($level . "StartTime");
-			if($sofar > 75)
+			if($sofar > 135)
 			{
 				if($player instanceof Player){
 				$event->setCancelled(true);
@@ -212,15 +212,15 @@ class SurvivalGames extends PluginBase implements Listener {
 					$rank = "";
 					if($args[0]=="VIP+")
 					{
-						$rank = "§b[§aVIP§4+§b]";
+						$rank = "VIP+;
 					}
 					else if($args[0]=="YouTuber")
 					{
-						$rank = "§b[§4You§7Tuber§b]";
+						$rank = "YouTuber";
 					}
 					else if($args[0]=="YouTuber+")
 					{
-						$rank = "§b[§4You§7Tuber§4+§b]";
+						$rank = "YouTuber+";
 					}
 					else
 					{
@@ -293,7 +293,7 @@ class SurvivalGames extends PluginBase implements Listener {
                                                 $player->sendMessage("§7[§fS§4G§7] Welcome ".$event->getPlayer()->getName()." to the Match!");
 						$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 						$rank = $config2->get($player->getName());
-						if($rank == "§b[§aVIP§4+§b]")
+						if($rank == "VIP+")
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::CHAIN_HELMET));
@@ -304,7 +304,7 @@ class SurvivalGames extends PluginBase implements Listener {
 							$player->getInventory()->sendArmorContents($player);
 							$player->getInventory()->setHotbarSlotIndex(0, 0);
 						}
-						else if($rank == "§b[§aVIP§b]")
+						else if($rank == "VIP")
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::GOLD_HELMET));
@@ -315,7 +315,7 @@ class SurvivalGames extends PluginBase implements Listener {
 								$player->getInventory()->sendArmorContents($player);
 							$player->getInventory()->setHotbarSlotIndex(0, 0);
 						}
-						else if($rank == "§b[§4You§7Tuber§b]")
+						else if($rank == "YouTuber)
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::GOLD_HELMET));
@@ -326,7 +326,7 @@ class SurvivalGames extends PluginBase implements Listener {
 								$player->getInventory()->sendArmorContents($player);
 							$player->getInventory()->setHotbarSlotIndex(0, 0);
 						}
-						else if($rank == "§b[§aVIP§b]")
+						else if($rank == "YouTuber+")
 						{
 							$player->getInventory()->setContents(array(Item::get(0, 0, 0)));
 							$player->getInventory()->setHelmet(Item::get(Item::DIAMOND_HELMET));
@@ -379,7 +379,7 @@ class SurvivalGames extends PluginBase implements Listener {
 		foreach($this->arenas as $arena)
 		{
 			$config->set($arena . "PlayTime", 780);
-			$config->set($arena . "StartTime", 60);
+			$config->set($arena . "StartTime", 120);
 		}
 		$config->save();
 	}
@@ -451,7 +451,7 @@ class GameSender extends PluginTask {
 					if(count($playersArena)==0)
 					{
 						$config->set($arena . "PlayTime", 780);
-						$config->set($arena . "StartTime", 60);
+						$config->set($arena . "StartTime", 120);
 					}
 					else
 					{
@@ -493,7 +493,7 @@ class GameSender extends PluginTask {
 								if($time>=180)
 								{
 								$time2 = $time - 180;
-								$minutes = $time2 / 60;
+								$minutes = $time2 / 120;
 									foreach($playersArena as $pl)
 									{
 										$pl->sendTip($this->prefix . $time2 . " Seconds left in the match!");
@@ -580,7 +580,7 @@ class GameSender extends PluginTask {
 									$pl->teleport($spawn,0,0);
 								}
 								$config->set($arena . "PlayTime", 780);
-								$config->set($arena . "StartTime", 60);
+								$config->set($arena . "StartTime", 120);
 							}
 							else
 							{
@@ -590,7 +590,7 @@ class GameSender extends PluginTask {
 								
 								}
 								$config->set($arena . "PlayTime", 780);
-								$config->set($arena . "StartTime", 60);
+								$config->set($arena . "StartTime", 120);
 							}
 						}
 					}
