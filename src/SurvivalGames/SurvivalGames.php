@@ -31,6 +31,7 @@ use pocketmine\inventory\ChestInventory;
 use pocketmine\event\plugin\PluginEvent;
 use pocketmine\entity\Entity;
 use pocketmine\network\protocol\AddEntityPacket;
+use onebone\economyapi\EconomyAPI;
 
 class SurvivalGames extends PluginBase implements Listener {
 	
@@ -42,6 +43,8 @@ class SurvivalGames extends PluginBase implements Listener {
 	public function onEnable()
 	{
         $this->getServer()->getPluginManager()->registerEvents($this ,$this);
+                $this->economy = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
+                $this->api = EconomyAPI::getInstance ();
 		$this->getLogger()->info(C::RED . "SurvivalGames Loaded!");
 		$this->saveResource("rank.yml");
 		$this->saveResource("config.yml");
@@ -580,6 +583,7 @@ class GameSender extends PluginTask {
 								{
 									$pl->getInventory()->clearAll();
                                                                         $pl->sendMessage($this->prefix . C::GRAY . "You won the match!");
+                                                                        $this->api->addMoney($p1->getName(),400);
 									$spawn = $this->plugin->getServer()->getDefaultLevel()->getSafeSpawn();
 									$this->plugin->getServer()->getDefaultLevel()->loadChunk($spawn->getX(), $spawn->getZ());
 									$pl->teleport($spawn,0,0);
