@@ -1,10 +1,7 @@
 name: SurvivalGames
 main: SurvivalGames\SurvivalGames
-version: 3.0.5
-api: 
-- 1.0.0
-- 1.1.0
-- 2.0.0
+version: 4.0
+api: 2.0.0
 authors: EpicSteve33, ImagicalGamer & RedEnder
 
 
@@ -14,4 +11,7 @@ commands:
         description: SurvivalGames-Commands
     setrank:
         usage: /setrank
-        description: Rank-Commands
+        description: SetRank-Command
+    ranks:
+        usage: /ranks
+        description: Rank-Command
