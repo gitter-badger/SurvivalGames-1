@@ -1,4 +1,4 @@
-# SurvivalGames v4.0
+# SurvivalGames v4.1
 This is a fork of the SurvivalGames plugin by ImagicalGamer
 
 # Use at Your own risk!
