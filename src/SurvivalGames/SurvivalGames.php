@@ -471,7 +471,7 @@ class GameSender extends PluginTask {
 								{
 									foreach($playersArena as $pl)
 									{
-                                                                        $pl->sendMessage($this->prefix . C::GRAY . "Let the games" . C::RED . C::BOLD . "begin!");}
+                                                                        $pl->sendMessage($this->prefix . C::GRAY . "Let the games" . C::RED . C::BOLD . " begin!");}
 									$this->refillChests($levelArena);
 								}
 								$config->set($arena . "StartTime", $timeToStart);
@@ -499,8 +499,8 @@ class GameSender extends PluginTask {
 								$minutes = $time2 / 120;
 									foreach($playersArena as $pl)
 									{
-										$pl->sendTip($this->prefix . $time2 . " Seconds left in the match!");
-							}
+										$pl->sendPopup($this->prefix . $time2 . " Seconds left in the match!");
+						                        }
 								if(is_int($minutes) && $minutes>0)
 								{
 									foreach($playersArena as $pl)
