@@ -534,6 +534,11 @@ class GameSender extends PluginTask {
 								$timeToStart--;
 								foreach($playersArena as $pl)
 								{
+									$level=$pl->getLevel();
+									$level->addSound(new FizzSound($pl));
+									$pl->setExp($timeToStart);
+									$pl->setHealth($timeToStart);
+									$pl->setFood($timeToStart);
 									$pl->sendPopup(C::GRAY . "Starting in " . $timeToStart . " Seconds");
 								}
 								if($timeToStart<=0)
