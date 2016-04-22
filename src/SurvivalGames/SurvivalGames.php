@@ -256,6 +256,8 @@ class SurvivalGames extends PluginBase implements Listener {
 	{
 		$player = $event->getPlayer();
 		$message = $event->getMessage();
+                //config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
+                //if($config->get("chat")=="ON"){
 		$config = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
 		$rank = "";
 		if($config->get($player->getName()) != null)
