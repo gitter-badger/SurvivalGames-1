@@ -27,4 +27,7 @@ chestitems:
 #If ON, then on player death, lightning will strike the ground where they died
 #If OFF, then no lightning
 lightning_effect: ON
+#if player is in the arenas they cannot chat with people outside arena
+#set to OFF if you don't want this to happen
+Chat-Event: ON
 ...
