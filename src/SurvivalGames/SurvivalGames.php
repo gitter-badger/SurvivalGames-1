@@ -127,6 +127,14 @@ class SurvivalGames extends PluginBase implements Listener {
 				if($player instanceof Player){
 				$event->setCancelled(true);
 				}
+				$time = $config->get($arena . "PlayTime");
+				if($time > 700)
+				{
+					if($player instanceof Player){
+				$event->setCancelled(true);
+				}	
+					
+				}
 			}
 		}
 	}
