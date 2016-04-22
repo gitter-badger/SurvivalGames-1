@@ -69,68 +69,8 @@ class SurvivalGames extends PluginBase implements Listener {
 		$config->save();
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new GameSender($this), 20);
 		$this->getServer()->getScheduler()->scheduleRepeatingTask(new RefreshSigns($this), 10);
-	}
-public function Kit($player){
-		$p = $player;
-		$kit = rand(1,8);
-		$config2 = new Config($this->getDataFolder() . "/rank.yml", Config::YAML);
-		$rank = $config2->get($player->getName());
-		if(!($rank=="VIP+" || $rank=="VIP" || $rank=="YouTuber" || $rank=="YouTuber+"){
-			
-		
-		switch($kit){
-			case 1:
-				$p->getInventory()->addItem(Item::get(302,0,1));
-				$p->getInventory()->addItem(Item::get(303,0,1));
-				$p->getInventory()->addItem(Item::get(304,0,1));
-				$p->getInventory()->addItem(Item::get(305,0,1));
-				$p->getInventory()->addItem(Item::get(279,0,1));
-				
-				$p->sendMessage(C::BLUE."You Randomly Got The ".C::YELLOW."Athlete".C::BLUE." Kit!");
-			break;
-			
-			case 2:
-				$p->getInventory()->addItem(Item::get(298,0,1));
-				$p->getInventory()->addItem(Item::get(299,0,1));
-				$p->getInventory()->addItem(Item::get(300,0,1));
-				$p->getInventory()->addItem(Item::get(301,0,1));
-				$p->getInventory()->addItem(Item::get(268,0,1));
-				
-				$p->sendMessage(C::BLUE."You Randomly Got The ".C::YELLOW."Beginnerz".C::BLUE." Kit!");
-			break;
-			
-			case 3:
-				$effect = Effect::getEffect(1);
-				$effect->setDuration(2184728365782365723642365723652); 
-				$effect->setVisible(true);
-				$effect->setAmplifier(2);
-				$p->addEffect($effect);
-				
-				$effect2 = Effect::getEffect(8);
-				$effect2->setDuration(2184728365782365723642365723652); 
-				$effect2->setVisible(true);
-				$effect2->setAmplifier(2);
-				$p->addEffect($effect2);
-				
-				$p->getInventory()->addItem(Item::get(267,0,1));
-				
-				$p->sendMessage(C::BLUE."You Randomly Got The ".C::YELLOW."Athlete".C::BLUE." Kit!");
-			break;
-			
-			case 4:
-				$ef = Effect::getEffect(8);
-				$ef->setDuration(2184728365782365723642365723652); 
-				$ef->setVisible(true);
-				$ef->setAmplifier(4);
-				$p->addEffect($ef);
-				
-				$p->getInventory()->addItem(Item::get(293,0,1));
-				
-				$p->sendMessage(C::BLUE."You Randomly Got The ".C::YELLOW."Rabbit".C::BLUE." Kit!");
-			break;
-		}
-	}
-}
+        }
+
  	public function PlayerDeath(PlayerDeathEvent $event){
           foreach($this->getServer()->getOnlinePlayers() as $pl){
 	  $config = new Config($this->getDataFolder() . "/config.yml", Config::YAML);
