@@ -1,4 +1,6 @@
 # SurvivalGames v4.0
+
+[![Join the chat at https://gitter.im/EpicSteve33/SurvivalGames](https://badges.gitter.im/EpicSteve33/SurvivalGames.svg)](https://gitter.im/EpicSteve33/SurvivalGames?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 This is a fork of the SurvivalGames plugin by ImagicalGamer
 
 # Use at Your own risk!
